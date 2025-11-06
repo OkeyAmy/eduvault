@@ -62,8 +62,7 @@ export default function WalletModal({ isOpen, onClose }) {
           const res = await fetch(`/api/profile?address=${address}`);
           const data = await res.json();
           if (!cancelled && res.ok && data.exists) {
-            onClose?.();
-            router.push("/dashboard");
+            // keep user on current page; cookie is set via API
           } else if (!cancelled && step === 2) {
             setTimeout(() => setStep(3), 600);
           }
