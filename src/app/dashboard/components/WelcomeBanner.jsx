@@ -9,7 +9,7 @@ export default function WelcomeBanner({ user }) {
             <h1 className="text-3xl font-bold mb-4">👋 Welcome back, {firstName}!</h1>
             <div className="relative bg-[#FF9923] rounded-xl p-6 md:p-8 overflow-hidden min-h-[140px]">
                 <div
-                    className="absolute inset-0 opacity-20 pointer-events-none"
+                    className="absolute inset-0  pointer-events-none"
                     style={{ backgroundImage: "url(/walletflow.png)", backgroundSize: "cover", backgroundPosition: "center" }}
                 />
                 <div className="relative z-10 max-w-[60%]">
