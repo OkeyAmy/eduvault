@@ -40,7 +40,7 @@ export default function Sidebar() {
 
 	return (
 		<aside className="w-64 bg-white border-r border-gray-200 p-6 flex flex-col fixed h-full">
-			<div className="text-2xl font-bold mb-8">LOGO.</div>
+			<div className="text-2xl font-bold mb-8">EduVault</div>
 
 			{/* Main Menu */}
 			<nav className="space-y-1 mb-8">
