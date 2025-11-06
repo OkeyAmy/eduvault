@@ -73,25 +73,25 @@ export default function WalletModal({ isOpen, onClose }) {
 
 							<div className="flex items-end justify-center gap-6 mb-8">
 								<Image
-									src="/metamask.png"
+									src="/metaflow.png"
 									width={53}
 									height={53}
 									alt="MetaMask"
 								/>
 								<Image
-									src="/phantom.png"
+									src="/phantflow.png"
 									width={53}
 									height={53}
 									alt="Phantom"
 								/>
 								<Image
-									src="/coinbase.png"
+									src="/coinflow.png"
 									width={53}
 									height={53}
 									alt="Coinbase"
 								/>
 								<Image
-									src="/wallets.png"
+									src="/walletsflow.png"
 									width={53}
 									height={53}
 									alt="Other"
