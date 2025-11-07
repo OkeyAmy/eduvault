@@ -2,13 +2,26 @@
 
 import { FaXTwitter, FaLinkedinIn, FaInstagram } from "react-icons/fa6";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
 	return (
 		<footer className="bg-[#1e1e1e] text-gray-300 py-10 px-6 md:px-16">
 			<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 mb-10">
 				{/* Left Section - Brand Name */}
-				<h1 className="text-2xl font-bold text-white">EduVault</h1>
+				<div className="flex items-center gap-3">
+									{/* Image placed to the left of the site name. Put your file at /public/images/logo.png */}
+									<Image
+										src="/logo.png"
+										alt="EduVault Logo"
+										width={40}
+										height={40}
+										className="rounded-full object-cover"
+									/>
+									<div className="text-lg font-bold tracking-tight text-white">
+										EduVault.
+									</div>
+								</div>
 
 				{/* Newsletter Section */}
 				<div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full md:w-auto">

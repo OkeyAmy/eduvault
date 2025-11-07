@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -12,8 +13,15 @@ export default function Navbar() {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const router = useRouter();
-	
-	const { address, isConnected, isConnecting, balance, balanceSymbol, disconnectWallet } = useWallet();
+
+	const {
+		address,
+		isConnected,
+		isConnecting,
+		balance,
+		balanceSymbol,
+		disconnectWallet,
+	} = useWallet();
 
 	return (
 		<header className="relative flex justify-center py-6 px-4 md:px-0 overflow-visible bg-[#fffaf6] z-11111">
@@ -32,20 +40,30 @@ export default function Navbar() {
         bg-white/80 backdrop-blur-lg border border-gray-200 rounded-full py-3 px-6 md:px-10 shadow-sm z-10"
 			>
 				{/* Logo */}
-				<div className="text-lg font-bold tracking-tight text-gray-900">
-					EduVault.
+				<div className="flex items-center gap-3">
+					{/* Image placed to the left of the site name. Put your file at /public/images/logo.png */}
+					<Image
+						src="/logo.png"
+						alt="EduVault Logo"
+						width={40}
+						height={40}
+						className="rounded-full object-cover"
+					/>
+					<div className="text-lg font-bold tracking-tight text-gray-900">
+						EduVault.
+					</div>
 				</div>
 
 				{/* Desktop Menu */}
 				<div className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
 					<Link
-						href="howitworks"
+						href="/#howitworks"
 						className="hover:text-gray-900 transition-all duration-200"
 					>
 						How It Works
 					</Link>
 					<Link
-						href="#"
+						href="/#marketplace"
 						className="hover:text-gray-900 transition-all duration-200"
 					>
 						Marketplace
@@ -120,10 +138,12 @@ export default function Navbar() {
 				{/* Mobile Dropdown Menu */}
 				{menuOpen && (
 					<div className="absolute top-20 left-0 w-full bg-white border-t border-gray-200 shadow-sm flex flex-col items-center space-y-4 py-6 text-gray-700 md:hidden z-50">
-						<Link href="#">How It Works</Link>
-						<Link href="#">Marketplace</Link>
-						<Link href="#">Support</Link>
-						<Link href="#">Docs</Link>
+						<Link href="/#howitworks">How It Works</Link>
+						<Link href="/marketplace">Marketplace</Link>
+						<Link href="/#support">Support</Link>
+						<Link href="https://edu-vault.gitbook.io/edu-vault-docs/">
+							Docs
+						</Link>
 
 						{/* Mobile wallet button/state */}
 						{isConnected && address ? (
