@@ -1,60 +1,235 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import jwt from "jsonwebtoken";
-import { getDb } from "@/lib/mongodb";
+"use client";
 
-export default async function MyMaterialsPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-  if (!token) redirect("/");
+import { useEffect, useState, useMemo } from "react";
+import { useAccount, useReadContract, useReadContracts } from "wagmi";
+import { abi } from "../../../../contracts/EduVaultAbi";
+import { celoSepolia } from "wagmi/chains";
 
-  let user;
-  try {
-    user = jwt.verify(token, process.env.JWT_SECRET);
-  } catch {
-    redirect("/");
-  }
+const contractAddress = "0x3f48520ca0d8d51345b416b5a3e083dac8790f55";
 
-  const db = await getDb();
-  const userAddress = user.walletAddress || user.address || user.id;
-  const items = await db
-    .collection("materials")
-    .find({ userAddress })
-    .sort({ createdAt: -1 })
-    .toArray();
+export default function MyMaterialsPage() {
+  const { address } = useAccount();
+  const [nfts, setNfts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  // 1️⃣ Fetch all token IDs owned by this wallet
+  const {
+    data: tokenIdsData,
+    isLoading: tokensLoading,
+    isError: tokensError,
+  } = useReadContract({
+    address: contractAddress,
+    abi,
+    functionName: "tokensOfOwner",
+    args: [address ?? "0x0000000000000000000000000000000000000000"],
+    chain: celoSepolia,
+    enabled: Boolean(address),
+  });
+
+  // Normalize token IDs to strings
+  const tokenIds = useMemo(() => {
+    if (!tokenIdsData || tokenIdsData.length === 0) return [];
+    return tokenIdsData.map((id) => id.toString());
+  }, [tokenIdsData]);
+
+  // 2️⃣ Fetch tokenURI for each token ID
+  const tokenUriCalls = useMemo(() => {
+    if (!tokenIds || tokenIds.length === 0) return [];
+    return tokenIds.map((id) => ({
+      address: contractAddress,
+      abi,
+      functionName: "tokenURI",
+      args: [id],
+      chain: celoSepolia,
+    }));
+  }, [tokenIds]);
+
+  const {
+    data: tokenUriResults,
+    isLoading: uriLoading,
+    isError: uriError,
+  } = useReadContracts({
+    contracts: tokenUriCalls,
+    enabled: tokenUriCalls.length > 0,
+  });
+
+  // 3️⃣ Fetch metadata JSON for each valid HTTPS URI
+  useEffect(() => {
+    if (!address || !tokenUriResults || tokenUriResults.length === 0) return;
+    let mounted = true;
+
+    const fetchMetadata = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const fetched = await Promise.all(
+          tokenUriResults.map(async (entry, idx) => {
+            if (!entry || entry.status !== "success") return null;
+
+            const uri = Array.isArray(entry.result)
+              ? entry.result[0]
+              : entry.result;
+
+            // only accept https:// URIs
+            if (!uri || !uri.startsWith("https://")) return null;
+            const url = uri;
+
+            try {
+              const res = await fetch(url, { cache: "no-store" });
+              if (!res.ok) throw new Error(`Failed to fetch ${url}`);
+              const json = await res.json();
+
+              // filter only valid https:// URLs for file and image
+              const image =
+                json.image?.startsWith("https://") ? json.image : null;
+              const fileUrl =
+                json.file?.startsWith("https://")
+                  ? json.file
+                  : json.animation_url?.startsWith("https://")
+                    ? json.animation_url
+                    : null;
+
+              return {
+                name: json.name || "Untitled NFT",
+                description: json.description || "",
+                price: json.price || "0",
+                visibility: json.visibility || "private",
+                image,
+                fileUrl,
+                timestamp: json.timestamp,
+              };
+            } catch (err) {
+              console.error("Metadata fetch failed:", err);
+              return null;
+            }
+          })
+        );
+        if (mounted) {
+          // filter out duplicate tokenIds
+          const unique = fetched
+            .filter(Boolean)
+            .filter(
+              (nft, index, self) =>
+                index === self.findIndex((t) => t.name === nft.name && t.fileUrl === nft.fileUrl)
+            );
+          setNfts(unique);
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch NFT metadata");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    fetchMetadata();
+    return () => {
+      mounted = false;
+    };
+  }, [tokenUriResults, address, tokenIds]);
+
+  // Helper: format date like “Nov 02, 2025”
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "Unknown";
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+    });
+  };
+
+
+  // 🧩 UI States
+  if (!address)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600 text-sm">
+          Connect your wallet to view your minted NFTs.
+        </p>
+      </div>
+    );
+
+  if (tokensLoading || uriLoading || loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600 text-sm">Loading your materials...</p>
+      </div>
+    );
+
+  if (tokensError || uriError || error)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-600 text-sm">{error || "Error loading NFTs."}</p>
+      </div>
+    );
+
+  // 🖼️ NFT Grid
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <div className="max-w-6xl mx-auto py-10 px-6">
-        <h1 className="text-2xl font-bold mb-6">My Materials</h1>
-        {items.length === 0 ? (
-          <p className="text-sm text-gray-600">No materials uploaded yet.</p>
+        <h1 className="text-2xl font-bold mb-6">My Minted NFTs</h1>
+
+        {(!nfts || nfts.length === 0) ? (
+          <p className="text-sm text-gray-600">No NFTs found for this wallet.</p>
         ) : (
           <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((item) => (
-              <li key={item._id} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-                {item.thumbnailUrl && (
+            {nfts.map((nft, index) => (
+              <li
+                key={index}
+                className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all"
+              >
+                {nft.image && (
                   <img
-                    src={item.thumbnailUrl}
-                    alt={item.title}
-                    className="w-full h-36 object-cover rounded-md mb-3"
+                    src={nft.image}
+                    alt={nft.name}
+                    className="w-full h-44 object-cover rounded-lg mb-4"
                   />
                 )}
-                <h3 className="text-base font-semibold">{item.title}</h3>
-                {item.description && (
-                  <p className="text-xs text-gray-600 mt-1 line-clamp-2">{item.description}</p>
+                <h3 className="text-lg font-semibold mb-1">{nft.name}</h3>
+                {nft.description && (
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {nft.description}
+                  </p>
                 )}
-                <div className="flex items-center justify-between mt-3 text-sm">
-                  <span className="text-gray-500">{item.visibility}</span>
-                  <a
-                    href={item.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700 font-medium"
-                  >
-                    View
-                  </a>
+                <div className="space-y-1 text-sm">
+                  <p>
+                    <span className="font-medium text-gray-700">Price:</span>{" "}
+                    <span className="text-gray-800">
+                      ₦{nft.price}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-700">
+                      Visibility:
+                    </span>{" "}
+                    <span className="capitalize text-gray-800">
+                      {nft.visibility}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-700">
+                      Date Minted:
+                    </span>{" "}
+                    <span className="text-gray-800">
+                      {formatDate(nft.timestamp)}
+                    </span>
+                  </p>
                 </div>
+
+                {nft.fileUrl && (
+                  <div className="mt-4">
+                    <a
+                      href={nft.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg font-medium transition-all"
+                    >
+                      View File
+                    </a>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

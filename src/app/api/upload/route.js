@@ -1,68 +1,67 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+import { pinata } from "@/lib/pinata";
 
-export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
     const form = await request.formData();
-    const docFile = form.get("file");
-    const thumbFile = form.get("thumbnail");
+    const file = form.get("file");
+    const image = form.get("thumbnail");
 
-    if (!docFile && !thumbFile) {
-      return NextResponse.json({ error: "No files provided" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: "No document file provided" }, { status: 400 });
     }
 
     const results = {};
 
-    const token =
-      process.env.BLOB_READ_WRITE_TOKEN ||
-      process.env.VERCEL_BLOB_READ_WRITE_TOKEN ||
-      process.env.BLOB_RW_TOKEN;
+    // 1️⃣ Upload the main file
+    const uploadedFile = await pinata.upload.public.file(file);
+    const fileUrl = await pinata.gateways.public.convert(uploadedFile.cid);
+    results.fileUrl = fileUrl;
 
-    if (!token) {
-      return NextResponse.json(
-        {
-          error:
-            "Missing Blob token. Set BLOB_READ_WRITE_TOKEN in your env to enable uploads.",
-        },
-        { status: 500 }
-      );
+    // 2️⃣ Upload thumbnail (if provided)
+    if (image) {
+      const fileThumb = await pinata.upload.public.file(image);
+      const imgUrl = await pinata.gateways.public.convert(fileThumb.cid);
+      results.imgUrl = imgUrl;
     }
 
-    if (thumbFile) {
-      const safeThumbName = (thumbFile.name || "thumbnail")
-        .replace(/\s+/g, "-")
-        .replace(/[^a-zA-Z0-9.\-_]/g, "")
-        .toLowerCase();
-      const thumbBlob = await put(safeThumbName, thumbFile, {
-        access: "public",
-        token,
-        addRandomSuffix: true,
-        contentType: thumbFile.type || undefined,
-      });
-      results.thumbnail = thumbBlob;
+    // 3️⃣ Prepare the rest of the form data as JSON
+    const otherFields = {};
+    for (const [key, value] of form.entries()) {
+      if (key !== "file" && key !== "thumbnail") {
+        otherFields[key] = value;
+      }
     }
 
-    if (docFile) {
-      const safeDocName = (docFile.name || "document")
-        .replace(/\s+/g, "-")
-        .replace(/[^a-zA-Z0-9.\-_]/g, "")
-        .toLowerCase();
-      const docBlob = await put(safeDocName, docFile, {
-        access: "public",
-        token,
-        addRandomSuffix: true,
-        contentType: docFile.type || undefined,
-      });
-      results.file = docBlob;
-    }
+    // Include file URLs inside the metadata
+    const metadataJSON = {
+      ...otherFields,
+      file: results.fileUrl,
+      image: results.imgUrl || null,
+      timestamp: new Date().toISOString(),
+    };
+    console.log("Metadata JSON to upload:", metadataJSON);
 
-    return NextResponse.json({ success: true, ...results });
+    // 4️⃣ Upload metadata JSON to Pinata
+    const uploadedJson = await pinata.upload.public.json(metadataJSON);
+    const jsonUrl = await pinata.gateways.public.convert(uploadedJson.cid);
+    results.metadataUrl = jsonUrl;
+
+    console.log("Pinata Upload Results:", results);
+
+    // 5️⃣ Return the JSON file URL
+    return NextResponse.json({
+      success: true,
+      fileUrl: results.fileUrl,
+      image: results.imgUrl || "",
+      metadata: results.metadataUrl,
+    });
   } catch (err) {
-    console.error("Upload error:", err?.message || err);
+    console.error("Upload error:", err);
     return NextResponse.json(
-      { error: err?.message || "Upload failed" },
+      { error: err.message || "Upload failed" },
       { status: 500 }
     );
   }

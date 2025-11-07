@@ -1,16 +1,16 @@
 import { http, createConfig } from 'wagmi';
-import { mainnet, sepolia, polygon, polygonAmoy, celo, celoAlfajores } from 'wagmi/chains';
+import { mainnet, sepolia, celoSepolia, celo, celoAlfajores } from 'wagmi/chains';
 import { walletConnect, injected, coinbaseWallet } from 'wagmi/connectors';
 
 // WalletConnect Project ID - Get from https://cloud.walletconnect.com/
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID';
 
 // Define supported chains
-export const chains = [mainnet, sepolia, polygon, polygonAmoy, celo, celoAlfajores];
+export const chains = [mainnet, sepolia, celo, celoAlfajores];
 
 // Configure wagmi
 export const config = createConfig({
-  chains: [mainnet, sepolia, polygon, polygonAmoy, celo, celoAlfajores],
+  chains: [celoSepolia, celoAlfajores, mainnet, sepolia, celo,],
   connectors: [
     // Injected connector (MetaMask, Browser Wallets)
     // Using default injected() without target to detect all injected wallets
@@ -35,12 +35,11 @@ export const config = createConfig({
     }),
   ],
   transports: {
+    [celoSepolia.id]: http(),
+    [celoAlfajores.id]: http(),
+    [celo.id]: http(),
     [mainnet.id]: http(),
     [sepolia.id]: http(),
-    [polygon.id]: http(),
-    [polygonAmoy.id]: http(),
-    [celo.id]: http(),
-    [celoAlfajores.id]: http(),
   },
 });
 
