@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { FaHeart } from "react-icons/fa";
-import { FiChevronDown } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 
@@ -97,12 +97,13 @@ export default function MarketPage() {
 		<>
 			<Navbar />
 
+			{/* 🔹 Background Grid Pattern */}
+			<div
+				className="absolute inset-0 bg-[linear-gradient(to_right,#f2ede8_1px,transparent_1px),linear-gradient(to_bottom,#f2ede8_1px,transparent_1px)] bg-[size:40px_40px] opacity-70 pointer-events-none -z-1"
+				aria-hidden="true"
+			></div>
+
 			<section className="flex min-h-screen bg-[#fffaf6]">
-				{/* 🔹 Background Grid Pattern */}
-				<div
-					className="absolute inset-0 bg-[linear-gradient(to_right,#f2ede8_1px,transparent_1px),linear-gradient(to_bottom,#f2ede8_1px,transparent_1px)] bg-[size:40px_40px] opacity-70 pointer-events-none -z-40"
-					aria-hidden="true"
-				></div>
 				{/* Sidebar Categories */}
 				<aside className="hidden lg:block w-64 bg-white border-r border-gray-200 px-6 py-10 overflow-y-auto">
 					<h3 className="text-sm font-semibold text-gray-700 mb-6">
@@ -155,7 +156,6 @@ export default function MarketPage() {
 					{/* Filters */}
 					<div className="flex flex-wrap items-center justify-between mb-8">
 						<div className="flex flex-wrap items-center gap-4">
-							{/* Category Filter */}
 							<div className="flex items-center gap-2 text-gray-600 text-sm">
 								<span className="font-medium">Filters:</span>
 								<select className="border border-gray-300 bg-white rounded-md px-3 py-1 text-sm focus:ring-1 focus:ring-blue-300">
@@ -174,7 +174,6 @@ export default function MarketPage() {
 							</div>
 						</div>
 
-						{/* Sort Option */}
 						<div className="text-sm text-gray-600 mt-4 md:mt-0">
 							Sort by:{" "}
 							<select className="border border-gray-300 bg-white rounded-md px-3 py-1 text-sm ml-1 focus:ring-1 focus:ring-blue-300">
@@ -192,9 +191,10 @@ export default function MarketPage() {
 						className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
 					>
 						{materials.map((material, i) => (
-							<div
+							<Link
+								href={`/marketplace/${i}`}
 								key={i}
-								className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
+								className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 block"
 							>
 								{/* Thumbnail */}
 								<div className="relative w-full h-44 bg-gray-100">
@@ -218,7 +218,6 @@ export default function MarketPage() {
 										by {material.author}
 									</p>
 
-									{/* Stats */}
 									<div className="flex justify-between items-center text-xs text-gray-500">
 										<div className="flex items-center gap-1">
 											<FaHeart className="text-pink-500" />
@@ -234,7 +233,7 @@ export default function MarketPage() {
 										<span className="text-xs text-gray-400">CELO</span>
 									</div>
 								</div>
-							</div>
+							</Link>
 						))}
 					</motion.div>
 
