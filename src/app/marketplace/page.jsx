@@ -13,7 +13,7 @@ export default function MarketPage() {
 			author: "Chijioke M.",
 			likes: "21.5K",
 			price: "0.25 CELO",
-			image: "/images/note-sample.jpg",
+			image: "/images/image5.jpg",
 		},
 		{
 			title: "MTH 101 – Calculus Cheat Sheet",
