@@ -39,7 +39,7 @@ export default function Navbar() {
 				{/* Desktop Menu */}
 				<div className="hidden md:flex items-center space-x-10 text-sm font-medium text-gray-700">
 					<Link
-						href="#"
+						href="howitworks"
 						className="hover:text-gray-900 transition-all duration-200"
 					>
 						How It Works
@@ -51,13 +51,7 @@ export default function Navbar() {
 						Marketplace
 					</Link>
 					<Link
-						href="#"
-						className="hover:text-gray-900 transition-all duration-200"
-					>
-						Support
-					</Link>
-					<Link
-						href="#"
+						href="https://edu-vault.gitbook.io/edu-vault-docs/"
 						className="hover:text-gray-900 transition-all duration-200"
 					>
 						Docs
@@ -73,33 +67,33 @@ export default function Navbar() {
 								{parseFloat(balance).toFixed(3)} {balanceSymbol}
 							</div>
 						)}
-						
+
 						{/* Connected Address Button */}
 						<div className="relative group">
-                            <button
-                                onClick={() => router.push("/dashboard")}
-                                className="flex items-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 border border-green-300 
+							<button
+								onClick={() => router.push("/dashboard")}
+								className="flex items-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 border border-green-300 
                                 text-sm font-semibold py-2 px-5 rounded-full transition-all duration-300"
-                            >
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                {formatAddress(address)}
-                            </button>
-							
+							>
+								<div className="w-2 h-2 bg-green-500 rounded-full"></div>
+								{formatAddress(address)}
+							</button>
+
 							{/* Dropdown menu on hover */}
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                <Link
-                                    href="/dashboard"
-                                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
-                                >
-                                    View Profile
-                                </Link>
-                                <button
-                                    onClick={disconnectWallet}
-                                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg"
-                                >
-                                    Disconnect
-                                </button>
-                            </div>
+							<div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+								<Link
+									href="/dashboard"
+									className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
+								>
+									View Profile
+								</Link>
+								<button
+									onClick={disconnectWallet}
+									className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg"
+								>
+									Disconnect
+								</button>
+							</div>
 						</div>
 					</div>
 				) : (
@@ -109,7 +103,7 @@ export default function Navbar() {
 						className="hidden md:flex items-center gap-2 bg-white hover:bg-gray-100 text-black border border-gray-300 
 						text-sm font-semibold py-2 px-5 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isConnecting ? 'Connecting...' : 'Connect Wallet →'}
+						{isConnecting ? "Connecting..." : "Connect Wallet →"}
 					</button>
 				)}
 
@@ -130,7 +124,7 @@ export default function Navbar() {
 						<Link href="#">Marketplace</Link>
 						<Link href="#">Support</Link>
 						<Link href="#">Docs</Link>
-						
+
 						{/* Mobile wallet button/state */}
 						{isConnected && address ? (
 							<div className="flex flex-col items-center gap-3 w-full px-4">
@@ -144,13 +138,13 @@ export default function Navbar() {
 									</div>
 								)}
 								<div className="flex gap-2 w-full">
-                                    <Link
-                                        href="/dashboard"
-                                        onClick={() => setMenuOpen(false)}
-                                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-sm font-semibold py-2 px-4 rounded-full text-center"
-                                    >
-                                        Profile
-                                    </Link>
+									<Link
+										href="/dashboard"
+										onClick={() => setMenuOpen(false)}
+										className="flex-1 bg-gray-100 hover:bg-gray-200 text-sm font-semibold py-2 px-4 rounded-full text-center"
+									>
+										Profile
+									</Link>
 									<button
 										onClick={() => {
 											setMenuOpen(false);
@@ -171,7 +165,7 @@ export default function Navbar() {
 								disabled={isConnecting}
 								className="bg-gray-100 hover:bg-gray-200 text-sm font-semibold py-2 px-5 rounded-full disabled:opacity-50"
 							>
-								{isConnecting ? 'Connecting...' : 'Connect Wallet →'}
+								{isConnecting ? "Connecting..." : "Connect Wallet →"}
 							</button>
 						)}
 					</div>

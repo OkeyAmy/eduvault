@@ -34,7 +34,7 @@ export default function HowItWorks() {
 	};
 
 	return (
-		<section className="relative bg-[#0f0f0f] text-white py-20 px-6 md:px-16 rounded-[2rem] my-24 overflow-hidden">
+		<section className="relative bg-[#0f0f0f] text-white py-20 px-6 md:px-16 rounded-[2rem] my-24 overflow-hidden" id="howitworks">
 			{/* 🔹 Subtle Animated Gradient Glow */}
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.06),transparent_60%),radial-gradient(circle_at_80%_70%,rgba(255,255,255,0.04),transparent_60%)]"></div>
 
