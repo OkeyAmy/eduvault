@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# EduVault - Decentralized Educational Materials Sharing Platform
+
+EduVault is an application that allows users to upload educational materials, mint them as NFTs on the Celo Sepolia testnet, and share them with others.
+
+## Features
+
+-   **Decentralized File Storage:** Uploaded documents are stored on IPFS using Pinata, ensuring that the content is decentralized and resilient.
+-   **NFT Minting:** Each uploaded document is minted as an NFT on the Celo Sepolia testnet, providing a verifiable record of ownership and authenticity.
+-   **Web3 Wallet Integration:** Users can connect their wallets using WalletConnect, MetaMask, or Coinbase Wallet to interact with the platform.
+-   **Browse and Discover:** Users can browse and discover educational materials uploaded by others.
+
+## Technologies Used
+
+-   **Frontend:** Next.js, React, Tailwind CSS
+-   **Web3:** wagmi, viem, RainbowKit, Web3Modal
+-   **Decentralized Storage:** IPFS, Pinata
+-   **Smart Contracts:** Solidity, OpenZeppelin
+-   **Database:** MongoDB
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+-   Node.js (v18 or later)
+-   npm, yarn, pnpm, or bun
+-   A Web3 wallet (e.g., MetaMask)
+
+### Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone <repository-url>
+    ```
+2.  Navigate to the project directory:
+    ```bash
+    cd eduvault
+    ```
+3.  Install the dependencies:
+    ```bash
+    pnpm install
+    ```
+
+### Running the Application
+
+1.  Create a `.env` file in the root of the project and add the required environment variables 
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+MONGODB_URI=''
+JWT_SECRET=''
+
+# Email Configuration
+EMAIL_USER=''
+EMAIL_PASS=''
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+BLOB_READ_WRITE_TOKEN=""
+PINATA_API_KEY=""
+PINATA_API_SECRET=""
+PINATA_JWT=""
+
 ```
+2.  Run the development server:
+    ```bash
+    pnpm run dev
+    ```
+3.  Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Smart Contract
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The `EduVault` NFT smart contract is deployed on the **Celo Sepolia testnet** at the following address:
 
-## Learn More
+**`0x3f48520ca0d8d51345b416b5a3e083dac8790f55`**
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+You can view the contract on the [Celo Sepolia Block Explorer](https://sepolia-explorer.celo-testnet.org/address/0x3f48520ca0d8d51345b416b5a3e083dac8790f55).
